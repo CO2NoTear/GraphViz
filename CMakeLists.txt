@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(GraphViz)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -11,6 +11,7 @@ qt_standard_project_setup()
 
 qt_add_executable(GraphViz
   ${PROJECT_SOURCE_DIR}/src/main.cpp
+  ${PROJECT_SOURCE_DIR}/src/IOUtils.cpp
   ${PROJECT_SOURCE_DIR}/src/SimpleGraph.cpp
 )
 
