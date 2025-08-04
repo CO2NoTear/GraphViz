@@ -12,6 +12,7 @@ qt_standard_project_setup()
 qt_add_executable(GraphViz
   ${PROJECT_SOURCE_DIR}/src/main.cpp
   ${PROJECT_SOURCE_DIR}/src/IOUtils.cpp
+  ${PROJECT_SOURCE_DIR}/src/Force.cpp
   ${PROJECT_SOURCE_DIR}/src/SimpleGraph.cpp
 )
 

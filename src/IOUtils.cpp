@@ -1,26 +1,29 @@
 #include "IOUtils.h"
 #include <algorithm>
 #include <filesystem>
+#include <fstream>
 #include <iomanip>
 #include <sstream>
-namespace fs = std::filesystem;
+#include <stdexcept>
 
-vector<string> getResourceFiles(const string &directory) {
-  vector<string> files;
+vector<fs::path> getResourceFiles(const string &directory) {
+  vector<fs::path> files;
   for (const auto &file : fs::directory_iterator(directory)) {
-    files.push_back(file.path().filename());
+    files.push_back(std::filesystem::canonical(file.path()));
   }
   return files;
 }
 
-void printResourceFiles(const vector<string> &files) {
+void printResourceFiles(const vector<fs::path> &files) {
   for (const auto &file : files) {
     cout << std::setw(2) << &file - &files[0] << ": " << file << endl;
   }
   cout << endl;
 }
 
-string getUserInputFile(const vector<string> &files) {
+// fs::path getUserInputFile(const vector<fs::path> &files) { return files[12];
+// }
+fs::path getUserInputFile(const vector<fs::path> &files) {
   string rawInput;
   do {
     std::getline(cin, rawInput);
@@ -34,7 +37,10 @@ string getUserInputFile(const vector<string> &files) {
         continue;
       }
       return files[val];
-    } else if (std::find(files.begin(), files.end(), rawInput) != files.end()) {
+    } else if (std::find_if(files.begin(), files.end(),
+                            [&rawInput](const auto &path) {
+                              return path.stem() == rawInput;
+                            }) != files.end()) {
       return std::move(rawInput);
     } else {
       cout << "Invalid input, please try again." << endl;
@@ -65,4 +71,38 @@ float getUserInputTime(const float &defaultTime = 3.0f) {
   } while (!rawInput.empty());
   cout << "Nothing was gotten from user. Program exits." << endl;
   return defaultTime;
+}
+
+pair<vector<Node>, vector<Edge>> readGraphDataFromFile(const fs::path &file) {
+  std::fstream inputFile;
+  cout << "Reading graph data from file: " << fs::canonical(file).string()
+       << endl;
+  inputFile.open(file, std::ios::in);
+  if (!inputFile.is_open())
+    throw std::domain_error("Could not open file: " +
+                            fs::canonical(file).string());
+
+  unsigned nodeSize;
+  unsigned fromNodeIndex, toNodeIndex;
+  vector<Node> nodes;
+  vector<Edge> edges;
+
+  string rawInput;
+
+  // first line for node size
+  std::getline(inputFile, rawInput);
+  nodeSize = rawInput.empty() ? 0 : std::stoul(rawInput);
+
+  std::fill_n(std::back_inserter(nodes), nodeSize, Node{0.0, 0.0});
+
+  while (std::getline(inputFile, rawInput)) {
+    std::istringstream iss(rawInput);
+
+    iss >> fromNodeIndex >> toNodeIndex;
+    Edge newEdge{fromNodeIndex, toNodeIndex};
+
+    edges.push_back(newEdge);
+  }
+
+  return {nodes, edges};
 }

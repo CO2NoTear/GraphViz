@@ -1,5 +1,6 @@
 #pragma once
-#define SimpleGraph simplegraph_temp //Hack to redefine SimpleGraph using QT libraries
+#define SimpleGraph                                                            \
+  simplegraph_temp // Hack to redefine SimpleGraph using QT libraries
 
 /*************************************************************************
  * File: SimpleGraph.h
@@ -9,11 +10,11 @@
  * allow you to render a scaled version of a SimpleGraph you pass in.
  */
 
-#include <vector>
-#include <cstddef>
 #include <QObject>
-#include <QWidget>
 #include <QTime>
+#include <QWidget>
+#include <cstddef>
+#include <vector>
 
 /**
  * Type: Node
@@ -44,8 +45,8 @@ struct Edge {
  */
 
 struct SimpleGraph {
-    std::vector<Node> nodes;
-    std::vector<Edge> edges;
+  std::vector<Node> nodes;
+  std::vector<Edge> edges;
 };
 
 /**
@@ -54,11 +55,8 @@ struct SimpleGraph {
  * Draws the specified graph.
  */
 
-void DrawGraph(SimpleGraph& userGraph);
-void InitGraphVisualizer(SimpleGraph& userGraph);
-
-
-
+void DrawGraph(SimpleGraph &userGraph);
+void InitGraphVisualizer(SimpleGraph &userGraph);
 
 /** Implementation Details Below
  * -----------------------------------------------------------------------
@@ -72,37 +70,39 @@ void InitGraphVisualizer(SimpleGraph& userGraph);
 class SimpleGraph : public QObject {
   Q_OBJECT
 
-  public:
-    SimpleGraph(){}
-    SimpleGraph(const SimpleGraph& other):QObject(), nodes(other.nodes), edges(other.edges){}
-    std::vector<Node> nodes;
-    std::vector<Edge> edges;
-    void drawGraph(SimpleGraph & graph);
+public:
+  SimpleGraph() {}
+  SimpleGraph(const SimpleGraph &other)
+      : QObject(), nodes(other.nodes), edges(other.edges) {}
+  std::vector<Node> nodes;
+  std::vector<Edge> edges;
+  void drawGraph(SimpleGraph &graph);
 
-  signals:
-    void graphUpdated(SimpleGraph graph);
+signals:
+  void graphUpdated(SimpleGraph graph);
 };
 
-void DrawGraph(SimpleGraph& userGraph);
-void InitGraphVisualizer(SimpleGraph& userGraph);
+void DrawGraph(SimpleGraph &userGraph);
+void InitGraphVisualizer(SimpleGraph &userGraph);
 
-Q_DECLARE_METATYPE(SimpleGraph) //allows use of Simplegraph in signals/slots
+Q_DECLARE_METATYPE(SimpleGraph) // allows use of Simplegraph in signals/slots
 
 class MyWidget : public QWidget {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    static MyWidget & getInstance();
-    void initGraph(SimpleGraph & userGraph);
+  static MyWidget &getInstance();
+  void initGraph(SimpleGraph &userGraph);
 
 protected:
-    void paintEvent(QPaintEvent *event);
+  void paintEvent(QPaintEvent *event);
 
 private:
-    SimpleGraph userGraph;
-    QTime last_run;
-    friend void SimpleGraph::drawGraph(SimpleGraph & graph);
-
+  SimpleGraph userGraph;
+  QTime last_run;
+  friend void SimpleGraph::drawGraph(SimpleGraph &graph);
 };
+
+void InitGraphNodePositions(SimpleGraph &userGraph);
 
 /** Redefinition: main
  * -----------------------------------------------------------------------

@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QtGui>
 #include <algorithm>
+#include <random>
 
 #include "SimpleGraph.h"
 #undef main
@@ -27,7 +28,20 @@ const QString kLineColor = "#606060";
  * Prevents overload of update calls */
 
 // TODO: This was 0 but breaks in Qt 5.10. Invesitgate
-QSemaphore semaphore{1};
+QSemaphore semaphore{0};
+
+void InitGraphNodePositions(SimpleGraph &userGraph) {
+  const int windowCenterX = kWindowWidth / 2;
+  const int windowCenterY = kWindowHeight / 2;
+  const int windowRadius = std::min(kWindowWidth, kWindowHeight) / 2.5;
+  const size_t nodeSize = userGraph.nodes.size();
+  for (size_t i{}; i != nodeSize; ++i) {
+    Node &n = userGraph.nodes[i];
+    // 2k *M_PI / nodeSize is the angle between each node
+    n.x = std::cos(2.0f * M_PI * i / nodeSize) * windowRadius + windowCenterX;
+    n.y = std::sin(2.0f * M_PI * i / nodeSize) * windowRadius + windowCenterY;
+  }
+}
 
 void InitGraphVisualizer(SimpleGraph &userGraph) {
   MyWidget &g = MyWidget::getInstance();
